@@ -73,7 +73,7 @@ site_address_label = Label(window, text="Enter site address :", bg="white", font
 site_address_entry = Entry(window, width=40, bd=5)
 create_pass_button = Button(window, text="Create Password", fg="white", bg=blue, width=12,
                             font=(font_name, 10), command=create_password)
-retive_pass_button = Button(window, text="Retive Password", fg="white", bg=blue, width=12, font=(font_name, 10))
+retive_pass_button = Button(window, text="Retrieve Password", fg="white", bg=blue, width=12, font=(font_name, 10))
 password_label = Label(window, width=30, bg="gray92", height="2", text="password...", fg="white")
 exit_button = Button(window, text="Exit App", fg="white", bg=blue, width=8, font=(font_name, 10), command=window.quit)
 save_button = Button(window, text="Save password", fg="white", bg=blue, width=12, font=(font_name, 10),
