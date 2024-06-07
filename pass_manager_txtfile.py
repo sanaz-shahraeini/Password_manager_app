@@ -3,14 +3,25 @@ import random
 from tkinter import messagebox
 
 file_name = "information.txt"
+def recovery_password():
+    with open("information.txt", "r") as file:
+        site = site_address_entry.get()
+        for line in file:
+            parts_list = line.strip().split(" -> ")
+            if parts_list[0] == site:
+                password_label.config(text = parts_list[1],fg=blue)
+                site_address_entry.delete(0, END)
+
+            else:
+                messagebox.showwarning("Warning","Not Found!.")
+                site_address_entry.delete(0, END)
 
 
 def save_to_file():
     site = site_address_entry.get()
     generated_pass = password_label.cget("text")
     with open(file_name, "a") as file:
-         file.write(f"{site} : {generated_pass} \n")
-
+         file.write(f"{site} -> {generated_pass} \n")
     messagebox.showwarning("Notifications", "The password has been successfully saved.")
     site_address_entry.delete(0, END)
     password_label.config(text="")
@@ -72,8 +83,7 @@ site_address_label = Label(window, text="Enter site address :", bg="white", font
 site_address_entry = Entry(window, width=40, bd=5)
 create_pass_button = Button(window, text="Create Password", fg="white", bg=blue, width=12,
                             font=(font_name, 10), command=create_password)
-retrieve_pass_button = Button(window, text="Retrieve Password", fg="white", bg=blue, width=12, font=(font_name, 10))
-
+retrieve_pass_button = Button(window, text="Retrieve Password", fg="white", bg=blue, width=14, font=(font_name, 10),command=recovery_password)
 password_label = Label(window, width=30, bg="gray92", height="2", text="password...", fg="white")
 exit_button = Button(window, text="Exit App", fg="white", bg=blue, width=8, font=(font_name, 10), command=window.quit)
 save_button = Button(window, text="Save password", fg="white", bg=blue, width=12, font=(font_name, 10),
@@ -83,9 +93,9 @@ save_button = Button(window, text="Save password", fg="white", bg=blue, width=12
 site_address_label.grid(row=1, column=0, padx=15, pady=25)
 site_address_entry.grid(row=2, column=0, padx=10)
 create_pass_button.grid(row=3, column=0, pady=15)
-retrieve_pass_button.grid(row=4, column=0, pady=7)
+retrieve_pass_button.grid(row=5, column=0, pady=7)
 password_label.grid(row=7, column=0)
 exit_button.grid(column=0, row=6, pady=7)
-save_button.grid(column=0, row=5, pady=7)
+save_button.grid(column=0, row=4, pady=7)
 
 window.mainloop()
