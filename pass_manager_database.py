@@ -2,56 +2,85 @@ from tkinter import *
 import random
 from tkinter import messagebox
 import sqlite3
+import time
 
 blue = "midnight blue"
 font_name = "Arial"
+column_values = []
 
 
 def save_to_database():
-    conn = sqlite3.connect('database.db')
-    cur = conn.cursor()
-    site_add = site_address_entry.get()
+    site = site_address_entry.get()
     generated_pass = password_label.cget("text")
-    new_row = (site_add, generated_pass)
-    cur.execute("""CREATE TABLE IF NOT EXISTS passwords(
-                      site TEXT PRIMARY KEY ,
-                      password TEXT  UNIQUE  
-                             )""")
-    cur.execute("INSERT INTO passwords (site, password) VALUES (?, ?)", (new_row))
-    conn.commit()
-    conn.close()
-    password_label.config(text="saved!")
-    site_address_entry.delete(0, END)
+    if site == "":
+        messagebox.showwarning("Warning", "please enter site address!.")
+    elif generated_pass:
+        conn = sqlite3.connect('database.db')
+        cur = conn.cursor()
+
+        cur.execute("""CREATE TABLE IF NOT EXISTS passwords(
+                              site TEXT PRIMARY KEY ,
+                              password TEXT  UNIQUE  
+                                     )""")
+        new_row = (site, generated_pass)
+        cur.execute("INSERT INTO passwords (site, password) VALUES (?, ?)", (new_row))
+        conn.commit()
+        messagebox.showwarning("Notifications", "saved")
+        site_address_entry.delete(0, END)
+        password_label.config(text="")
+
+        conn.close()
+    else:
+        messagebox.showwarning("Notifications", "before save need to create password")
 
 
 def recovery_password():
-    conn = sqlite3.connect('database.db')
-    cur = conn.cursor()
-    site = site_address_entry.get()
-    cur.execute("SELECT password FROM passwords WHERE site=?", (site,))
-    row = cur.fetchone()
-    if row:
-        list_row = list(row)
-        password_label.config(text=list_row, fg=blue)
-        site_address_entry.delete(0, END)
-    else:
-        messagebox.showwarning("Warning", "not found ")
-        site_address_entry.delete(0, END)
-        password_label.config(text="")
+    try:
+        site = site_address_entry.get()
+        if site:
+            conn = sqlite3.connect('database.db')
+            cur = conn.cursor()
+            site_add = site_address_entry.get()
+
+            cur.execute("SELECT password FROM passwords WHERE site=?", (site_add,))
+            row = cur.fetchone()
+            if row:
+                list_row = list(row)
+                str_row = str(list_row)
+                messagebox.showwarning("Warning", "password:" + str_row)
+                site_address_entry.delete(0, END)
+            else:
+                messagebox.showwarning("Warning", "not found ")
+                site_address_entry.delete(0, END)
+                password_label.config(text="")
+
+        else:
+            messagebox.showwarning("Warning", "Enter the site address!")
+    except:
+        messagebox.showwarning("Warning", "database is empty!")
+        site_address_entry.delete(0,END)
 
 
 def create_password():
     selected_numbers = []
     selected_letters = []
     selected_signs = []
+
     site = site_address_entry.get()
     if site == "":
         messagebox.showwarning("Warning", "please enter site address!.")
     else:
         conn = sqlite3.connect('database.db')
         cur = conn.cursor()
+        cur.execute("""CREATE TABLE IF NOT EXISTS passwords(
+                             site TEXT PRIMARY KEY ,
+                             password TEXT  UNIQUE  
+                                    )""")
         cur.execute("SELECT site FROM passwords")
-        column_values = set([row[0] for row in cur.fetchall()])
+        column_fetch = cur.fetchall()
+        conn.commit()
+        for row in column_fetch:
+            column_values.append(row[0])
         if site in column_values:
             messagebox.showwarning("Warning", "site already saved in database")
             site_address_entry.delete(0, END)
@@ -78,6 +107,10 @@ def create_password():
                 random.shuffle(result_list)
                 result_string = ''.join(result_list)
                 password_label.config(text=result_string, fg=blue)
+            # window.update()
+            # time.sleep(3)
+            # password_label.config(text="")
+            # site_address_entry.delete(0,END)
 
 
 # UI Part :----------------
